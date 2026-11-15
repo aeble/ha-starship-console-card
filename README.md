@@ -1,6 +1,93 @@
-# Raumschiff-Konsole
+# Starship Console
 
 ![Screenshot](images/starship-console-card.png)
+
+A console in the style of 90s science-fiction shows: black background, rounded colour bars, elbows, narrow capitals and a pseudo stardate.
+
+The column of numbers at the top left shows real values as codes and scrolls one line per second: `PWR` power, `UT` uptime (sensor from the Uptime integration, or set `uptime:`), `NR` unavailable entities, `LGT` lights on, `EXT`/`RH` outdoors, `KSL` boiler, `GAS` gas today, `DL`/`UL` network, `BAT` low batteries, `LQ` link quality of all `*_linkquality` sensors (weakest first).
+
+- Environment section with segment bars for every room.
+- Lights as pill buttons.
+- Engineering with heating, gas and power, red alert bar while the burner runs.
+- Sensors with outdoor readings and network throughput, communications with departures, people, contacts and batteries.
+
+The card pays homage to a design style. It contains no names, logos or terms from any particular show.
+
+## Configuration
+
+All cards share the same keys. Anything missing is hidden or shown as "–".
+
+```yaml
+type: custom:starship-console-card
+title: Home
+outside_temperature: sensor.outdoor_temperature
+outside_humidity: sensor.outdoor_humidity
+weather: weather.forecast_home        # condition, and fallback for the outdoor temperature
+flame: binary_sensor.burner_flame     # heating, optional
+boiler: sensor.boiler_temperature
+hot_water: sensor.hot_water_temperature
+gas_today: sensor.gas_today
+gas_cost: sensor.gas_cost_today
+power: sensor.house_power             # W
+download: sensor.wan_download         # optional, converted to Mbit/s whatever the unit
+upload: sensor.wan_upload
+battery_threshold: 20                 # battery sensors below this are reported
+idle_timeout: 300                     # idle screen after this many seconds without touch (omit = off)
+idle_wake:                            # optional, keeps the dashboard awake while active
+  - binary_sensor.kitchen_presence
+rooms:
+  - name: Living room
+    temperature: sensor.living_room_temperature
+    humidity: sensor.living_room_humidity
+    co2: sensor.living_room_co2           # optional, ppm; yellow from 1000, red from 1200
+    pm25: sensor.living_room_pm25         # optional, µg/m³; yellow from 15, red from 35
+lights:
+  - name: Kitchen
+    entity: light.kitchen
+departure:                            # optional, sensor holding the timestamp of the next departure
+  name: Bus 12 › Centre
+  entity: sensor.next_departure
+  delay: sensor.delay
+contacts:                             # optional, windows and doors
+  - name: Bathroom window
+    entity: binary_sensor.bathroom_window
+```
+
+The idle screen puts a black layer with a faint clock over the dashboard; a tap wakes it without switching anything underneath. A browser cannot dim the tablet's backlight itself. While idle, all animations pause and the card redraws only every 30 seconds, which helps older tablets.
+
+People come from all `person.*` entities, low batteries from all sensors with `device_class: battery`.
+
+The text shown on the cards is German.
+
+## Installation
+
+Via HACS as a custom repository (type Dashboard), or by hand: copy `starship-console-card.js` to `/config/www/` and add `/local/starship-console-card.js` as a JavaScript module under Settings → Dashboards → Resources.
+
+A discreet signature sits in the bottom right corner; `signature: false` hides it.
+
+The card is meant for a panel view (`panel: true`) so it fills the screen.
+
+```yaml
+views:
+  - title: Home
+    panel: true
+    cards:
+      - type: custom:starship-console-card
+        # configuration as above
+```
+
+The fonts are embedded in the card file; the card loads nothing from external servers.
+
+## License
+
+Apache License 2.0, copyright 2026 Axel Eble. If you redistribute or modify the card, include `LICENSE` and `NOTICE`.
+
+
+---
+
+## Deutsch
+
+### Raumschiff-Konsole
 
 Konsole im Stil von Science-Fiction-Serien der 90er: schwarzer Grund, abgerundete Farbbalken, Ellbogen, schmale Versalien und eine Pseudo-Sternzeit.
 
@@ -13,7 +100,7 @@ Die Zahlenkolonne links oben zeigt echte Werte als Codes und rollt jede Sekunde 
 
 Die Karte ist eine Hommage an einen Gestaltungsstil. Sie enthält keine Namen, Logos oder Begriffe aus einer bestimmten Serie.
 
-## Konfiguration
+#### Konfiguration
 
 Alle Karten teilen sich dieselben Schlüssel. Was fehlt, wird ausgeblendet oder als „–“ angezeigt.
 
@@ -57,7 +144,7 @@ Der Ruhemodus legt ein schwarzes Bild mit schwacher Uhr über das Dashboard; Ant
 
 Personen kommen automatisch aus allen `person.*`-Entitäten, schwache Batterien aus allen Sensoren mit `device_class: battery`.
 
-## Einbau
+#### Einbau
 
 Über HACS als benutzerdefiniertes Repository (Typ Dashboard) oder von Hand: `starship-console-card.js` nach `/config/www/` kopieren und unter Einstellungen → Dashboards → Ressourcen als JavaScript-Modul `/local/starship-console-card.js` eintragen.
 
@@ -74,8 +161,8 @@ views:
         # Konfiguration wie oben
 ```
 
-Schriften kommen von Google Fonts. Ohne Internetzugang fällt die Karte auf Systemschriften zurück.
+Die Schriften stecken in der Kartendatei; die Karte lädt nichts von fremden Servern.
 
-## Lizenz
+#### Lizenz
 
 Apache License 2.0, Copyright 2026 Axel Eble. Wer die Karte weitergibt oder verändert, liefert `LICENSE` und `NOTICE` mit.
